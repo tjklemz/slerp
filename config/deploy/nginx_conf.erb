@@ -1,0 +1,22 @@
+upstream <%= application %> {
+  server 127.0.0.1:8001;
+}
+
+server {
+  listen <%= app_port %> default deferred;
+  client_max_body_size 4G;
+  server_name <%= server_name %>;
+  keepalive_timeout 5;
+  
+  location /static {
+    alias <%= "#{deploy_to}/current/static" %>;
+    gzip_static on;
+    expires max;
+    add_header Cache-Control public;
+  }
+  
+  location / {
+    uwsgi_pass <%= application %>;
+    include uwsgi_params;
+  }
+}
